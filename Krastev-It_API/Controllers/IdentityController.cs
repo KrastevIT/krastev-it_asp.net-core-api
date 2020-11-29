@@ -8,6 +8,8 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Krastev_It_API.Controllers
@@ -45,7 +47,7 @@ namespace Krastev_It_API.Controllers
         }
 
         [Route(nameof(Login))]
-        public async Task<ActionResult<string>> Login(LoginModel model)
+        public async Task<ActionResult<AuthTokenModel>> Login(LoginModel model)
         {
             var user = await this.userManager.FindByNameAsync(model.UserName);
             if (user == null)
@@ -69,8 +71,9 @@ namespace Krastev_It_API.Controllers
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var encryptedToken = tokenHandler.WriteToken(token);
+            var modelModel = new AuthTokenModel { Token = encryptedToken};
 
-            return encryptedToken;
+            return modelModel;
         }
 
     }
