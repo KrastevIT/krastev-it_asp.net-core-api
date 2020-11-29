@@ -5,9 +5,8 @@ namespace Krastev_It_API.Controllers
 {
     public class HomeController : ApiContoller
     {
-        [HttpGet]
         [Authorize]
-        public IActionResult Get()
+        public ActionResult Get()
         {
             return Ok("Works");
         }

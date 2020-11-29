@@ -1,11 +1,9 @@
 using Krastev_It_API.Data;
-using Krastev_It_API.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -29,7 +27,13 @@ namespace Krastev_It_API
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services
-                .AddIdentity<User, IdentityRole>()
+                .AddIdentity<User, IdentityRole>(options =>
+                {
+                    options.Password.RequireDigit = false;
+                    options.Password.RequiredUniqueChars = 0;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                })
                 .AddEntityFrameworkStores<KrastevItDbContext>();
 
             var applicationSettingsConfiguration = this.Configuration.GetSection("AppSettings");
@@ -63,7 +67,7 @@ namespace Krastev_It_API
         {
             if (env.IsDevelopment())
             {
-                app.UseMigrationsEndPoint();
+                app.UseDeveloperExceptionPage();
             }
 
             app.UseRouting();
