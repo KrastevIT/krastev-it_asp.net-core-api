@@ -348,5 +348,5 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
-/appsettings.Development.json
-/appsettings.json
+/Krastev-It_API/appsettings.json
+/Krastev-It_API/appsettings.Development.json
