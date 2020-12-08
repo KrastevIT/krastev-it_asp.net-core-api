@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,19 +15,24 @@ namespace Krastev_It_API.Controllers
 {
     public class IdentityController : ApiContoller
     {
+        private static readonly string Role = "Admin";
+
         private readonly UserManager<User> userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
         private readonly AppSettings appSettings;
 
         public IdentityController(
             UserManager<User> userManager,
+            RoleManager<IdentityRole> roleManager,
             IOptions<AppSettings> appSettings)
         {
             this.userManager = userManager;
+            this.roleManager = roleManager;
             this.appSettings = appSettings.Value;
         }
 
         [Route(nameof(Register))]
-        public async Task<ActionResult> Register(RegisterModel model)
+        public async Task<ActionResult<LoginModel>> Register(RegisterModel model)
         {
             var user = new User
             {
@@ -36,9 +42,15 @@ namespace Krastev_It_API.Controllers
 
             var result = await this.userManager.CreateAsync(user, model.Password);
 
+            if (!await roleManager.RoleExistsAsync(Role))
+            {
+                await roleManager.CreateAsync(new IdentityRole(Role));
+                await userManager.AddToRoleAsync(user, Role);
+            }
+
             if (result.Succeeded)
             {
-                return Ok();
+                return Ok(new LoginModel { UserName = model.UserName, Password = model.Password });
             }
 
             return BadRequest(result.Errors);
