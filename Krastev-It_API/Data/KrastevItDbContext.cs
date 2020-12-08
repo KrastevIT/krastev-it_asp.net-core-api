@@ -9,5 +9,7 @@ namespace Krastev_It_API.Data
             : base(options)
         {
         }
+
+        public DbSet<SiteQuestion> SiteQuestions { get; set; }
     }
 }
