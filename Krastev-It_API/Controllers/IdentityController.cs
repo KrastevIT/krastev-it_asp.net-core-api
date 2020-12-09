@@ -91,5 +91,27 @@ namespace Krastev_It_API.Controllers
             return modelModel;
         }
 
+        [Route(nameof(UpdateUser))]
+        public async Task<ActionResult> UpdateUser(UpdateUserModel model)
+        {
+            var user = await this.userManager.FindByNameAsync(model.Username);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+            else if (model.Password == null || model.NewPassword == null)
+            {
+                return BadRequest();
+            }
+
+            var isChange = await this.userManager.ChangePasswordAsync(user, model.Password, model.NewPassword);
+            if (isChange.Succeeded)
+            {
+                return Ok();
+            }
+
+            return BadRequest(isChange);
+        }
+
     }
 }
