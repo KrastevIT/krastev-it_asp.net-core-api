@@ -15,7 +15,7 @@ namespace Krastev_It_API.Controllers
 {
     public class IdentityController : ApiContoller
     {
-        private static readonly string Role = "Admin";
+        private static readonly string RoleAdmin = "Admin";
 
         private readonly UserManager<User> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
@@ -42,10 +42,10 @@ namespace Krastev_It_API.Controllers
 
             var result = await this.userManager.CreateAsync(user, model.Password);
 
-            if (!await roleManager.RoleExistsAsync(Role))
+            if (!await roleManager.RoleExistsAsync(RoleAdmin))
             {
-                await roleManager.CreateAsync(new IdentityRole(Role));
-                await userManager.AddToRoleAsync(user, Role);
+                await roleManager.CreateAsync(new IdentityRole(RoleAdmin));
+                await userManager.AddToRoleAsync(user, RoleAdmin);
             }
 
             if (result.Succeeded)
@@ -87,6 +87,12 @@ namespace Krastev_It_API.Controllers
                 Username = user.UserName,
                 Token = encryptedToken
             };
+
+            var isAdmin = await this.userManager.IsInRoleAsync(user, RoleAdmin);
+            if (isAdmin)
+            {
+                modelModel.IsAdmin = true;
+            }
 
             return modelModel;
         }
