@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -19,15 +20,18 @@ namespace Krastev_It_API.Controllers
 
         private readonly UserManager<User> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
+        private readonly KrastevItDbContext db;
         private readonly AppSettings appSettings;
 
         public IdentityController(
             UserManager<User> userManager,
             RoleManager<IdentityRole> roleManager,
-            IOptions<AppSettings> appSettings)
+            IOptions<AppSettings> appSettings,
+            KrastevItDbContext db)
         {
             this.userManager = userManager;
             this.roleManager = roleManager;
+            this.db = db;
             this.appSettings = appSettings.Value;
         }
 
@@ -117,6 +121,39 @@ namespace Krastev_It_API.Controllers
             }
 
             return BadRequest(isChange);
+        }
+
+        [HttpGet(nameof(GetUsers) + "/{username}")]
+        public async Task<ActionResult> GetUsers(string username)
+        {
+            var user = await this.userManager.FindByNameAsync(username);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            var isAdmin = await this.userManager.IsInRoleAsync(user, RoleAdmin);
+            if (isAdmin)
+            {
+                var users = this.db.Users.ToList();
+
+                var usersModel = new List<UsersModel>();
+
+                foreach (var userDb in users)
+                {
+                    var model = new UsersModel
+                    {
+                        Username = userDb.UserName,
+                        Email = userDb.Email
+                    };
+
+                    usersModel.Add(model);
+                }
+
+                return Ok(usersModel);
+            }
+
+            return Unauthorized();
         }
 
     }

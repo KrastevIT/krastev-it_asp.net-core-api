@@ -4,14 +4,16 @@ using Krastev_It_API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Krastev_It_API.Migrations
 {
     [DbContext(typeof(KrastevItDbContext))]
-    partial class KrastevItDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201211095012_EditUsernameInSiteQuestionWithName")]
+    partial class EditUsernameInSiteQuestionWithName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
