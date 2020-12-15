@@ -11,5 +11,9 @@ namespace Krastev_It_API.Data
         }
 
         public DbSet<SiteQuestion> SiteQuestions { get; set; }
+
+        public DbSet<Course> Courses { get; set; }
+
+        public DbSet<Lecture> Lectures { get; set; }
     }
 }
